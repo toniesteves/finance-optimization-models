@@ -5,7 +5,6 @@ import yfinance as yf
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 
-
 pd.options.display.float_format = "{:.4f}".format
 
 class MarkowitzPortfolio:
@@ -33,6 +32,7 @@ class MarkowitzPortfolio:
         self._calculate_metrics()
 
     def _download_data(self):
+
         """Download historical price data from Yahoo Finance"""
         print("\n=== DOWNLOAD HISTORICAL ASSET DATA ===")
         data = yf.download(self.tickers, start=self.start_date, end=self.end_date, auto_adjust=False)['Adj Close']
@@ -122,46 +122,6 @@ class MarkowitzPortfolio:
         metrics["sharpe_ratio"]    = (metrics["expected_return"] - self.risk_free_rate) / metrics["volatility"]
 
         return metrics
-
-    def plot_efficient_frontier(self, num_points=20):
-        """
-        Plot the efficient frontier by solving for different target returns
-
-        Parameters:
-        - num_points: Number of points to plot
-        """
-        min_return = self.mean_returns.min()
-        max_return = self.mean_returns.max()
-        target_returns = np.linspace(min_return, max_return, num_points)
-
-        volatilities = []
-        returns = []
-
-        print("Calculating efficient frontier...")
-        for ret in target_returns:
-            try:
-                weights = self.optimize(target_return=ret)
-                _, vol, _ = self.calculate_portfolio_metrics(weights)
-                volatilities.append(vol)
-                returns.append(ret)
-            except:
-                continue
-
-        plt.figure(figsize=(10, 6))
-        plt.plot(volatilities, returns, 'b-', label='Efficient Frontier')
-        plt.scatter(np.sqrt(np.diag(self.cov_matrix)), self.mean_returns,
-                    c='red', label='Individual Assets')
-
-        # Annotate asset tickers
-        for i, txt in enumerate(self.tickers):
-            plt.annotate(txt, (np.sqrt(self.cov_matrix.iloc[i, i]), self.mean_returns[i]))
-
-        plt.title('Efficient Frontier')
-        plt.xlabel('Volatility (Standard Deviation)')
-        plt.ylabel('Expected Return')
-        plt.legend()
-        plt.grid(True)
-        plt.show()
 
 
 # Example Usage
