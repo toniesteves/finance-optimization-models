@@ -1,18 +1,17 @@
 #  Toni Esteves Copyright (c) 2025.
 #  Project Name: finance-optimization-models
 #  Author: Toni Esteves <toni.esteves@gmail.com.br>
-#  Created: 06/04/2025 01:42
-#  Updated: 06/04/2025 01:42
+#  Created: 06/04/2025 14:11
+#  Updated: 06/04/2025 13:30
 
 
 import numpy as np
 import pandas as pd
 from docplex.mp.model import Model
 import yfinance as yf
-import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 
-from callbacks.SSDLazyCallback import SSDLazyCallback
+import models.callbacks.SSDLazyCallback
 
 pd.options.display.float_format = "{:.4f}".format
 

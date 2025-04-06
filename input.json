@@ -1,0 +1,17 @@
+{
+  "tickers": [ "AXP", "AAPL", "AMGN", "CAT", "CRM", "CSCO",
+               "CVX", "DIS",  "DOW", "GS", "HD", "IBM", "INTC",
+               "JNJ", "JPM", "KO", "MCD", "MMM", "MRK", "MSFT",
+               "NKE", "PG", "TRV", "UNH", "V", "WBA", "WMT", "XOM"
+  ],
+  "dates": {
+    "end_date": "2023-11-15",
+    "in-sample-days": 200
+  },
+  "metadata": {
+    "description": "Stock tickers and date range for analysis",
+    "date_format": "YYYY-MM-DD",
+    "generated_on": "2023-11-15",
+    "days_back": 200
+  }
+}

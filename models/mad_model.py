@@ -1,15 +1,14 @@
 #  Toni Esteves Copyright (c) 2025.
 #  Project Name: finance-optimization-models
 #  Author: Toni Esteves <toni.esteves@gmail.com.br>
-#  Created: 06/04/2025 01:27
-#  Updated: 06/04/2025 01:27
+#  Created: 06/04/2025 14:33
+#  Updated: 06/04/2025 13:30
 
 
 import numpy as np
 import pandas as pd
 from docplex.mp.model import Model
 import yfinance as yf
-import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 
 
@@ -145,26 +144,3 @@ class MADPortfolio:
         metrics["sharpe_ratio"]    = (metrics["expected_return"] - self.risk_free_rate) / metrics["volatility"]
 
         return metrics
-
-
-
-# Example Usage
-if __name__ == "__main__":
-    tickers = [
-        "AXP", "AAPL", "AMGN", "CAT", "CRM", "CSCO", "CVX", "DIS", "DOW", "GS",
-        "HD", "IBM", "INTC", "JNJ", "JPM", "KO", "MCD", "MMM", "MRK", "MSFT", "NKE",
-        "PG", "TRV", "UNH", "V", "WBA", "WMT", "XOM"]
-
-    end_date = datetime.today().strftime('%Y-%m-%d')
-    start_date = (datetime.today() - timedelta(days=200)).strftime('%Y-%m-%d')
-
-    portfolio = MadPortfolio(tickers, start_date, end_date)
-    optimal_weights = portfolio.optimize(log_output=False)
-
-    print("\nOptimal Weights Allocation(Risk Neutral):")
-    print(pd.DataFrame([optimal_weights]))
-
-    metrics = portfolio.calculate_portfolio_metrics(optimal_weights)
-    print(pd.DataFrame([metrics]))
-
-    print()
