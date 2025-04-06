@@ -48,7 +48,7 @@ def run_model(verbose=False, output_log=True):
     n_scenarios = historical_returns.shape[0]
 
     print("\n=== INICIANDO RESOLUÇÃO DO MAD ===")
-    model = Model(name='MAD')
+    model = Model(name='Markowitz')
     model.context.cplex_parameters.threads = 1  # Para melhor acompanhamento
 
     w = model.continuous_var_list(n_assets, name="w", lb=0, ub=1)
