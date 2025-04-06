@@ -49,18 +49,17 @@ class MarkowitzPortfolio:
 
     def optimize(self, target_return=None, risk_aversion=1.0, log_output=True):
         """
-        Solve the Markowitz optimization problem
+        Solve the MAD optimization problem
 
         Parameters:
         - target_return: Optional target return constraint
-        - risk_aversion: Risk aversion parameter (1.0 is neutral)
 
         Returns:
         - Dictionary of optimal weights
         """
         n = len(self.tickers)
 
-        # Create DOCPLEX model
+        print("\n=== INICIANDO RESOLUÇÃO DO MARKOWITZ ===")
         model = Model(name='Markowitz_Portfolio')
 
         w = model.continuous_var_list(n, lb=0, ub=1, name='w')
