@@ -18,6 +18,7 @@ from typing import List, Dict, Any
 @dataclass
 class InputData:
     tickers: List[str]
+    model: str
     end_date: str
     start_date: str
     in_sample_days: int
@@ -47,17 +48,18 @@ def read_input(file_path: str) -> InputData:
             raise KeyError("Configuration must contain 'tickers' and 'dates' fields")
 
         # Compute dates
-        end_date = datetime.strptime(config['dates']['end_date'], '%Y-%m-%d')
-        start_date = end_date - timedelta(days=config['dates']['in-sample-days'])
+        end_date            = datetime.strptime(config['dates']['end_date'], '%Y-%m-%d')
+        start_date          = end_date - timedelta(days=config['dates']['in-sample-days'])
         computed_start_date = start_date.strftime('%Y-%m-%d')
 
         return InputData(
-            tickers=config['tickers'],
-            end_date=config['dates']['end_date'],
-            start_date=start_date.strftime('%Y-%m-%d'),
-            in_sample_days=config['dates']['in-sample-days'],
-            computed_start_date=computed_start_date,
-            metadata=config.get('metadata', {})
+            tickers             = config['tickers'],
+            model               = config['strategy']['model'],
+            end_date            = config['dates']['end_date'],
+            start_date          = start_date.strftime('%Y-%m-%d'),
+            in_sample_days      = config['dates']['in-sample-days'],
+            computed_start_date = computed_start_date,
+            metadata            = config.get('metadata', {})
         )
 
 def inspect_input(config: InputData) -> None:
@@ -77,19 +79,23 @@ def inspect_input(config: InputData) -> None:
 
     # Tickers section
     print(f"\n[STOCK TICKERS]\nCount: {len(config.tickers)}")
-    print(f"Tickers: {', '.join(config.tickers[:10])}{'...' if len(config.tickers) > 10 else ''}")
+    print(f"\tTickers: {', '.join(config.tickers[:10])}{'...' if len(config.tickers) > 10 else ''}")
+
+    # Strategy section
+    print(f"\n[STRATEGY]")
+    print(f"\tModel:          {config.model}")
 
     # Dates section
     print(f"\n[DATE RANGE]")
-    print(f"End Date:       {config.end_date}")
-    print(f"Start Date:     {config.start_date}")
-    print(f"Computed Start: {config.computed_start_date}")
-    print(f"In-Sample Days: {config.in_sample_days}")
+    print(f"\tEnd Date:       {config.end_date}")
+    print(f"\tStart Date:     {config.start_date}")
+    print(f"\tComputed Start: {config.computed_start_date}")
+    print(f"\tIn-Sample Days: {config.in_sample_days}")
 
     # Metadata section
     if config.metadata:
         print("\n[METADATA]")
         for k, v in config.metadata.items():
-            print(f"{k.replace('_', ' ').title()}: {v}")
+            print(f"\t{k.replace('_', ' ').title()}: {v}")
 
     print("\n" + "=" * 50 + "\n")
