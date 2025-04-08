@@ -15,7 +15,7 @@ from models.callbacks import ssd_lazy_callback
 
 pd.options.display.float_format = "{:.4f}".format
 
-class SSDPortfolio:
+class SSD:
     """
     Implementation of SSD Portfolio Optimization using DOCPLEX.
 

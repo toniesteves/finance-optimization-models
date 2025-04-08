@@ -1,8 +1,8 @@
 #  Toni Esteves Copyright (c) 2025.
 #  Project Name: finance-optimization-models
 #  Author: Toni Esteves <toni.esteves@gmail.com.br>
-#  Created: 06/04/2025 13:32
-#  Updated: 06/04/2025 13:32
+#  Created: 07/04/2025 23:59
+#  Updated: 06/04/2025 14:37
 
 import numpy as np
 import pandas as pd
@@ -15,7 +15,7 @@ from plotting.finance import plot_cvar_results
 pd.options.display.float_format = "{:.4f}".format
 
 
-class CVaRPortfolio:
+class CVaR:
     """
     Implementation of CVar Portfolio Optimization using DOCPLEX.
 

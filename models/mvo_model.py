@@ -1,3 +1,9 @@
+#  Toni Esteves Copyright (c) 2025.
+#  Project Name: finance-optimization-models
+#  Author: Toni Esteves <toni.esteves@gmail.com.br>
+#  Created: 08/04/2025 00:00
+#  Updated: 06/04/2025 14:37
+
 import numpy as np
 import pandas as pd
 from docplex.mp.model import Model
@@ -7,7 +13,7 @@ from datetime import datetime, timedelta
 
 pd.options.display.float_format = "{:.4f}".format
 
-class MarkowitzPortfolio:
+class MVO:
     """
     Implementation of Markowitz Mean-Variance Portfolio Optimization using DOCPLEX.
 

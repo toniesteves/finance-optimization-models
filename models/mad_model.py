@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 
 pd.options.display.float_format = "{:.4f}".format
 
-class MADPortfolio:
+class MAD:
     """
     Implementation of MAD Mean-Variance Portfolio Optimization using DOCPLEX.
 
