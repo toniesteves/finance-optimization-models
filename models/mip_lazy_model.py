@@ -67,7 +67,7 @@ class MIPLazyDemo:
         - Dictionary of optimal weights
         """
         print("\n=== INICIANDO RESOLUÇÃO DO MIP ===")
-        model = Model("MIP_Lazy_Demo")
+        model = Model("\tMIP_Lazy_Demo")
         model.context.cplex_parameters.threads = 1  # Para melhor acompanhamento
 
         # Variáveis inteiras com limites mais interessantes
@@ -83,31 +83,32 @@ class MIPLazyDemo:
 
         print("\nRestrições iniciais do modelo:")
         for ct in model.iter_constraints():
-            print(f"Name: {ct.name}, Expression: {ct.left_expr} {ct.sense} {ct.right_expr}")
+            print(f"\tName: {ct.name}, Expression: {ct.left_expr} {ct.sense} {ct.right_expr}")
 
 
         # Configuração do callback
         lazy_cb = model.register_callback(MIPLazyCallback)
         lazy_cb.x = x
         lazy_cb.y = y
+        lazy_cb.verbose = False
 
         print("\nIniciando processo de otimização...")
         sol = model.solve(log_output=True)
 
         if model.solve_details.status_code == 3:  # infeasible model
-            print("Infeasible Model")
+            print("\tInfeasible Model")
 
         if sol:
             print("\n=== RESULTADO FINAL ===")
-            print(f"Solução ótima:")
-            print(f"x = {sol[x]}, y = {sol[y]}")
-            print(f"Valor objetivo: {sol.objective_value}")
+            print(f"\tSolução ótima:")
+            print(f"\tx = {sol[x]}, y = {sol[y]}")
+            print(f"\tValor objetivo: {sol.objective_value}")
 
             print("\nVerificação pós-otimização:")
-            print(f"x + 3y = {sol[x] + 3 * sol[y]} (deve ser ≤ 10)")
-            print(f"x + y = {sol[x] + sol[y]} (deve ser ≤ 8)")
+            print(f"\tx + 3y = {sol[x] + 3 * sol[y]} (deve ser ≤ 10)")
+            print(f"\tx + y = {sol[x] + sol[y]} (deve ser ≤ 8)")
         else:
-            raise ValueError("No solution found. Try adjusting parameters.")
+            raise ValueError("\tNo solution found. Try adjusting parameters.")
 
         return self.optimal_weights
 

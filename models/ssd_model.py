@@ -11,7 +11,7 @@ from docplex.mp.model import Model
 import yfinance as yf
 from datetime import datetime, timedelta
 
-import models.callbacks.SSDLazyCallback
+from models.callbacks import ssd_lazy_callback
 
 pd.options.display.float_format = "{:.4f}".format
 
@@ -68,7 +68,7 @@ class SSDPortfolio:
         n = len(self.tickers)
         n_scenarios = self.historical_returns.shape[0]
 
-        print("\n=== INICIANDO RESOLUÇÃO DO MAD ===")
+        print("\n=== INICIANDO RESOLUÇÃO DO SSD ===")
         model = Model(name='SSD')
         model.context.cplex_parameters.threads = 1  # Para melhor acompanhamento
 

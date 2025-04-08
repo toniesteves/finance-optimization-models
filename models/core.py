@@ -10,7 +10,7 @@ from models.mvo_model import MarkowitzPortfolio
 from models.ssd_model import SSDPortfolio
 
 # Mapping of portfolio types to classes
-portfolio_classes = {
+PORTFOLIO_CLASSES = {
     'mip': MIPLazyDemo,
     'mvo': MarkowitzPortfolio,
     'mad': MADPortfolio,
