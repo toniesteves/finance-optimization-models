@@ -7,8 +7,8 @@
 from models.estimators.cvar_model import CVaR
 from models.estimators.mad_model import MAD
 from models.mip_lazy_model import MIPLazyDemo
-from models.estimators.mvo_model import MVO
-from models.stochastic.ssd_model import SSD
+from models.mvo.mvo_model import MVO
+from models.statistical.ssd_model import SSD
 
 # Mapping of portfolio types to classes
 PORTFOLIO_CLASSES = {
