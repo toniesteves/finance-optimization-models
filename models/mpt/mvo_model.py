@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 pd.options.display.float_format = "{:.4f}".format
 
-class MVO:
+class MeanVarianceOptimization:
     """
     Implementation of Markowitz Mean-Variance Portfolio Optimization using DOCPLEX.
 
@@ -97,7 +97,7 @@ class MVO:
             print(weights)
             print(f"\nObjective Function: {sol.objective_value}")
 
-            model.export_as_lp("models/mvo.lp")
+            model.export_as_lp("models/mpt.lp")
         else:
             raise ValueError("No solution found. Try adjusting parameters.")
 

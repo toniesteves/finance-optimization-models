@@ -7,13 +7,13 @@
 from models.estimators.cvar_model import CVaR
 from models.estimators.mad_model import MAD
 from models.mip_lazy_model import MIPLazyDemo
-from models.mvo.mvo_model import MVO
+from models.mpt.mvo_model import MeanVarianceOptimization
 from models.statistical.ssd_model import SSD
 
 # Mapping of portfolio types to classes
 PORTFOLIO_CLASSES = {
     'mip':  MIPLazyDemo,
-    'mvo':  MVO,
+    'mpt':  MeanVarianceOptimization,
     'mad':  MAD,
     'ssd':  SSD,
     'cvar': CVaR
