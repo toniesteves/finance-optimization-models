@@ -4,6 +4,10 @@
                "JNJ", "JPM", "KO", "MCD", "MMM", "MRK", "MSFT",
                "NKE", "PG", "TRV", "UNH", "V", "WBA", "WMT", "XOM"
   ],
+  "strategy": {
+    "model": "cvar"
+  },
+
   "dates": {
     "end_date": "2023-11-15",
     "in-sample-days": 200

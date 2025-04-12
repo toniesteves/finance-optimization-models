@@ -4,6 +4,7 @@
 #  Created: 08/04/2025 00:24
 #  Updated: 08/04/2025 00:24
 
+import numpy as np
 from typing import List, Dict
 from docplex.mp.model import DOcplexException
 from docplex.mp.callbacks.cb_mixin import ConstraintCallbackMixin
