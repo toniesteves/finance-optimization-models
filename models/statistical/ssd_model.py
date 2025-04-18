@@ -1,8 +1,8 @@
 #  Toni Esteves Copyright (c) 2025.
 #  Project Name: finance-optimization-models
 #  Author: Toni Esteves <toni.esteves@gmail.com.br>
-#  Created: 06/04/2025 14:11
-#  Updated: 06/04/2025 13:30
+#  Created: 18/04/2025 00:40
+#  Updated: 08/04/2025 00:00
 
 
 import numpy as np
@@ -12,6 +12,7 @@ import yfinance as yf
 from datetime import datetime, timedelta
 
 from models.callbacks import ssd_lazy_callback
+from models.callbacks.ssd_lazy_callback import SSDLazyCallback
 
 pd.options.display.float_format = "{:.4f}".format
 
@@ -30,6 +31,7 @@ class SSD:
         self.tickers = tickers
         self.start_date = start_date
         self.end_date = end_date
+        self.n_scenarios = None
         self.returns = None
         self.optimal_weights = None
         self.risk_free_rate = risk_free_rate
@@ -68,68 +70,42 @@ class SSD:
         n = len(self.tickers)
         n_scenarios = self.historical_returns.shape[0]
 
-        print("\n=== INICIANDO RESOLUÇÃO DO SSD ===")
+        print("\n=== STARTING SSD MODEL ===")
         model = Model(name='SSD')
-        model.context.cplex_parameters.threads = 1  # Para melhor acompanhamento
+        model.context.cplex_parameters.threads = 1
 
-        # Variáveis inteiras com limites mais interessantes
-        w = model.continuous_var_list(n, lb=0, ub=1)
-        V = model.continuous_var(name="V")  # Optimization objective
+        # Variáveis
+        w  = model.continuous_var_list(self.n_scenarios, lb=0, ub=1, name='wl')
+        Vs = model.continuous_var_list(self.n_scenarios, lb=0, ub=1, name='V')
+        V  = model.continuous_var(name="V")
+        cb = model.binary_var(name='cb_temp')  # Alterado para binary_var
 
-        # Função objetivo mais desafiadora
-        model.maximize(V)
+        # Restrições básicas
+        model.add_constraint(model.sum(w) == 1, ctname="budget")
 
-        # Restrições iniciais mínimas para criar soluções candidatas interessantes
-        model.add_constraint(model.sum(w) == 1, ctname="budget")  # Budget Constraint
-        model.add_constraints(w[i] >= 0 for i in range(n))  # Non-negativity Constraint
-        for t in range(n_scenarios):
-            scenario_return = model.sum(((self.returns[t, i] * w[i])) for i in range(n))
-            model.add_constraint(
-                V <= scenario_return - self.benchmark[0])  # Let's consider only constraints with first worst index scenarion
+        for t in range(self.n_scenarios):
+            model.add_constraint(Vs[t] >= V, ctname=f"maxmin_{t}")
 
-        print("\nRestrições iniciais do modelo:")
-        for ct in model.iter_constraints():
-            print(f"Name: {ct.name}, Expression: {ct.left_expr} {ct.sense} {ct.right_expr}")
+        model.maximize(V + cb)
 
-        # Configuração do callback
-        lazy_cb = model.register_callback(SSDLazyCallback)
-        lazy_cb.x = x
-        lazy_cb.y = y
+        if callback:
+            # Registra o callback e passa os parâmetros necessários
+            lazy_cb = model.register_callback(SSDLazyCallback)
+            lazy_cb.n_assets = self.n_assets
+            lazy_cb.n_scenar = n_scenar
+            lazy_cb.scenarios = scenarios
+            lazy_cb.benchmark = benchmark
+            lazy_cb.w_vars = w
 
         print("\nIniciando processo de otimização...")
         sol = model.solve(log_output=True)
 
-        if model.solve_details.status_code == 3:  # infeasible model
-            print("Infeasible Model")
-
         if sol:
-            print("\n=== RESULTADO FINAL ===")
-            print(f"Solução ótima:")
-            print(f"x = {sol[x]}, y = {sol[y]}")
-            print(f"Valor objetivo: {sol.objective_value}")
-
-            optimized_weights = [sol[weight] for weight in w]
-            weights = np.array(optimized_weights)
-            print(f"{sol.get_objective_value()}")
-            model.export_as_lp("toni_ssd_model.lp")
-        else:
-            print("Nenhuma solução encontrada!")
-
-        if sol:
-            print("\n=== RESULTADO FINAL ===")
-            print(f"\nOptimal Solution:")
-            optimized_weights = [sol[weight] for weight in w]
-            self.optimal_weights = {self.tickers[i]: w[i].solution_value for i in range(n)}
-
-            weights = np.array(optimized_weights)
-            print(weights)
-            print(f"\nObjective Function: {sol.objective_value}")
-
-            model.export_as_lp("models/mad.lp")
-        else:
-            raise ValueError("No solution found. Try adjusting parameters.")
-
-        return self.optimal_weights
+            w_solutions = [sol[wi] for wi in w]
+            print("Solução encontrada:")
+            print(f"V = {sol[V]}")
+            for i, val in enumerate(w_solutions):
+                print(f"w[{i}] = {val}")
 
 
     def calculate_portfolio_metrics(self, weights):

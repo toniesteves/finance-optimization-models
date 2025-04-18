@@ -140,7 +140,7 @@ if __name__ == "__main__":
     end_date = datetime.today().strftime('%Y-%m-%d')
     start_date = (datetime.today() - timedelta(days=200)).strftime('%Y-%m-%d')
 
-    portfolio = MarkowitzPortfolio(tickers, start_date, end_date)
+    portfolio = MeanVarianceOptimization(tickers, start_date, end_date)
     optimal_weights = portfolio.optimize(log_output=False)
 
     print("\nOptimal Weights Allocation(Risk Neutral):")

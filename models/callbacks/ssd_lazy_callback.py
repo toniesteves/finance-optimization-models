@@ -6,37 +6,58 @@
 
 from cplex.callbacks import LazyConstraintCallback
 from docplex.mp.callbacks.cb_mixin import ConstraintCallbackMixin
-class SSDLazyCallback(LazyConstraintCallback, ConstraintCallbackMixin):
+
+
+class SSDLazyCallback(ConstraintCallbackMixin, LazyConstraintCallback, SolveCallback):
     def __init__(self, env):
-        super().__init__(env)
-        self.x = None
-        self.y = None
+        LazyConstraintCallback.__init__(self, env)
+        ConstraintCallbackMixin.__init__(self)
         self.n_calls = 0
+        self.n_assets = None  # Será definido depois
+        self.n_scenar = None  # Será definido depois
+        self.scenarios = None  # Será definido depois
+        self.benchmark = None  # Será definido depois
+        self.w_vars = None
 
     def __call__(self):
         self.n_calls += 1
-        try:
-            # Obtém os valores atuais da solução candidata
-            x_val = self.get_values(self.x.index)
-            y_val = self.get_values(self.y.index)
+        print(f"\n--> CUSTOM CALLBACK CALLED #{self.n_calls} ---")
 
-            print(f"\n--- Chamada de Callback #{self.n_calls} ---")
-            print(f"Solução candidata: x = {x_val}, y = {y_val}")
-            print(f"Avaliando se x + 3y > 10: {x_val} + 3*{y_val} = {x_val + 3 * y_val}")
+        # Obtém a solução corrente
+        current_solution = self.make_complete_solution()
+        print(f"CURRENT_SOLUTION: {current_solution}")
 
-            # Condição para adicionar restrição
-            if x_val + 3 * y_val > 10:
-                print("⚠️ Solução viola a condição x + 3y ≤ 10")
-                print("Adicionando restrição lazy: x + y ≤ 8")
+        current_w_values = {var.name: self.get_values(var.index) for var, val in zip(self.w_vars, self.w_vars)}
+        print(f"CURRENT_W: {current_w_values}")
+
+        # Obtém o valor de V
+        valor = self.model.get_var_by_name('V')
+        print(f"CURRENT_V: {valor}")
+
+        V_value = current_solution[self.model.get_var_by_name('V')]
+        print(f"CURRENT_V: {V_value}")
+
+        print(f"Valores atuais de w: {current_w_values}")
+        print(f"Valor atual de V: {V_value}")
+
+        # Verifica as restrições SSD para cada cenário
+        for t in range(self.n_scenar):
+            # Calcula o retorno do portfolio no cenário t
+            portfolio_return = sum(self.scenarios[t, i] * self.w_values[i] for i in range(self.n_assets))
+
+            # Verifica se a restrição SSD é violada
+            if V_value > (portfolio_return - self.benchmark[t]):
+                print(f"⚠️ Restrição SSD violada para cenário {t}")
 
                 # Adiciona a restrição lazy
-                cpx_lhs, sense, cpx_rhs = self.linear_ct_to_cplex(self.x + self.y <= 8)
-                self.add(cpx_lhs, sense, cpx_rhs)
+                w_vars = [self.get_model().get_var_by_name(f'wl_{i}')
+                          for i in range(self.n_assets)]
+                scenario_return_expr = sum(self.scenarios[t, i] * w_vars[i]
+                                           for i in range(self.n_assets))
 
-                print("✅ Restrição lazy adicionada com sucesso!")
-            else:
-                print("✅ Solução válida, nenhuma restrição adicionada")
+                # Cria e adiciona a restrição lazy
+                # ct = (self.get_model().get_var_by_name('V') <=
+                #      scenario_return_expr - self.benchmark[t])
+                # self.add(ct, 'L', 0)
 
-        except Exception as e:
-            print(f"Erro no callback: {str(e)}")
-            raise
+                print(f"✅ Restrição lazy adicionada para cenário {t}")

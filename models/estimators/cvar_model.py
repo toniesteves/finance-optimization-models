@@ -10,7 +10,7 @@ from docplex.mp.model import Model
 import yfinance as yf
 from datetime import datetime, timedelta
 
-from plotting.finance import plot_cvar_results
+from blotter.finance import plot_cvar_results
 
 pd.options.display.float_format = "{:.4f}".format
 
